@@ -31,32 +31,23 @@ protected:
 	TObjectPtr<UInputMappingContext> InputMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
-	TObjectPtr<UInputAction> ForwardAction;
-
-	UPROPERTY(EditDefaultsOnly, Category = Input)
-	TObjectPtr<UInputAction> RightAction;
+	TObjectPtr<UInputAction> MoveAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<UInputAction> LookAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = Input)
-	TObjectPtr<UInputAction> AnyAction;
-
 	UFUNCTION()
-	void MoveForward(const FInputActionValue& Value);
-
-	UFUNCTION()
-	void MoveRight(const FInputActionValue& Value);
+	void Movement(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void Look(const FInputActionValue& Value);
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USphereComponent> SphereComponent;
+	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
+	TObjectPtr<USphereComponent> SphereComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USpringArmComponent> SpringArmComponent;

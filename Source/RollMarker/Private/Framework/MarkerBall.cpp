@@ -50,40 +50,25 @@ void AMarkerBall::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	if (UEnhancedInputComponent* PlayerEnchancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		PlayerEnchancedInputComponent->BindAction(ForwardAction, ETriggerEvent::Triggered, this, &AMarkerBall::MoveForward);
-		PlayerEnchancedInputComponent->BindAction(RightAction, ETriggerEvent::Triggered, this, &AMarkerBall::MoveRight);
+		PlayerEnchancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMarkerBall::Movement);
 		PlayerEnchancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMarkerBall::Look);
 	}
 }
 
-void AMarkerBall::MoveForward(const FInputActionValue& Value)
+void AMarkerBall::Movement(const FInputActionValue& Value)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Forward"));
-	}
-	const FVector MoveVector = Value.Get<FVector>();
-	const FVector Forward = UKismetMathLibrary::GetForwardVector(GetControlRotation());
-	StaticMeshComponent->AddImpulse(Forward * MoveVector * 5.f, NAME_None, true);
-}
-
-void AMarkerBall::MoveRight(const FInputActionValue& Value)
-{
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Right"));
-	}
-	const FVector MoveVector = Value.Get<FVector>();
-	const FVector Forward = UKismetMathLibrary::GetForwardVector(GetControlRotation());
-	StaticMeshComponent->AddAngularImpulseInDegrees(Forward * MoveVector * 5.f, NAME_None, true);
+	const FVector2D MoveVector = Value.Get<FVector2D>();
+	const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(GetControlRotation());
+	const FVector RightVector = UKismetMathLibrary::GetRightVector(GetControlRotation());
+	StaticMeshComponent->AddAngularImpulseInDegrees(ForwardVector * MoveVector.Y * 5.f, NAME_None, true);
+	StaticMeshComponent->AddAngularImpulseInDegrees(RightVector * MoveVector.X * 5.f, NAME_None, true);
 }
 
 void AMarkerBall::Look(const FInputActionValue& Value)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Look"));
-	}
+	const FVector2D LookVector = Value.Get<FVector2D>();
+	AddControllerPitchInput(LookVector.Y);
+	AddControllerYawInput(LookVector.X);
 }
 
 void AMarkerBall::Tick(float DeltaTime)
