@@ -57,6 +57,7 @@ void AMarkerBall::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AMarkerBall::Movement(const FInputActionValue& Value)
 {
+	//TODO: Add Velocity Check for Arrow and speed control
 	const FVector2D MoveVector = Value.Get<FVector2D>();
 	const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(GetControlRotation());
 	const FVector RightVector = UKismetMathLibrary::GetRightVector(GetControlRotation());

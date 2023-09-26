@@ -6,12 +6,13 @@
 #include "GameFramework/Pawn.h"
 #include "MarkerCubeBase.generated.h"
 
-UENUM(BlueprintType) // <<<<
+UENUM(BlueprintType)
 enum class EMarkerCubeActions : uint8
 {
 	EMCA_MoveX UMETA(DisplayName = "ImpulseX"),
 	EMCA_MoveY UMETA(DisplayName = "ImpulseY"),
-	EMCA_Jump UMETA(DisplayName = "Jump")
+	EMCA_Jump UMETA(DisplayName = "Jump"),
+	EMCA_Last UMETA(Hidden)
 };
 
 class UBoxComponent;
@@ -29,27 +30,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UFUNCTION()
-	void RandomMovement();
-
-	UFUNCTION()
-	void AddImpulseX();
-
-	UFUNCTION()
-	void AddImpulseY();
-
-	UFUNCTION()
-	void Jump();
-
 private:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UBoxComponent> BoxComponent;
-
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
-	UPROPERTY(EditAnywhere)
-	float RandomImpulseIntervalTime = 0.2;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UBoxComponent> BoxComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Impulse")
+	float RandomImpulseIntervalTime = 0.2f;
 
 	UPROPERTY(EditAnywhere, Category = "Impulse")
 	float MinImpulseValue = -500.f;
@@ -67,9 +56,24 @@ private:
 	float JumpDelayTime = 3.f;
 
 	UPROPERTY(VisibleAnywhere, Category = "Impulse | Jump")
-	float JumpDelayTemp;
+	float JumpDelayTimeTemp;
 
-	UPROPERTY(EditAnywhere, Category = "Impulse | Jump")
+	UPROPERTY(VisibleAnywhere, Category = "Impulse | Jump")
 	bool bJumpAllowed = true;
+
+	UPROPERTY(VisibleAnywhere, Category = "Impulse")
+	TEnumAsByte<EMarkerCubeActions> MarkerCubeAction;
+
+	uint8 LastEnumIndex;
+	FTimerHandle TimerHandle;
+	TArray<EMarkerCubeActions> CubeActionsArray;
+
+	int8 GetRandomEnum(TArray<TEnumAsByte<EMarkerCubeActions>>ExcludedEnums);
+	void SetLastEnumIndex();
+	void SetupRandomMovementTimer();
+	void RandomMovement();
+	void AddRandImpulseX();
+	void AddRandImpulseY();
+	void Jump();
 
 };
