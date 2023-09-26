@@ -108,6 +108,10 @@ void AMarkerCubeBase::Jump()
 	StaticMeshComponent->AddImpulse(FVector(0.f, 0.f, FMath::FRandRange(MinJumpImpulseValue, MaxJumpImpulseValue)), NAME_None, true);
 }
 
+void AMarkerCubeBase::SetMarkedState(FColor Color)
+{
+}
+
 void AMarkerCubeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

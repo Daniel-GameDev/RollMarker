@@ -15,6 +15,13 @@ enum class EMarkerCubeActions : uint8
 	EMCA_Last UMETA(Hidden)
 };
 
+UENUM(BlueprintType) // ???
+enum class EMarkerCubeState : uint8
+{
+	EMCS_Default UMETA(DisplayName = "Default"),
+	EMCS_Marked UMETA(DisplayName = "Marked")
+};
+
 class UBoxComponent;
 
 UCLASS()
@@ -76,4 +83,9 @@ private:
 	void AddRandImpulseY();
 	void Jump();
 
+public:
+	//UPROPERTY(VisibleAnywhere)
+	//TEnumAsByte<EMarkerCubeState> MarkerCuberState = EMarkerCubeState::EMCS_Default;
+
+	void SetMarkedState(FColor Color);
 };

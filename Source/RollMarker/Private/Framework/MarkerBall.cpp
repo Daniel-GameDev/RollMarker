@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Gameplay/MarkerCubeBase.h"
 
 AMarkerBall::AMarkerBall()
 {
@@ -22,6 +23,7 @@ AMarkerBall::AMarkerBall()
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SphereComponent->SetupAttachment(StaticMeshComponent);
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AMarkerBall::OnBoxBeginOverlap);
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(StaticMeshComponent);
@@ -29,11 +31,15 @@ AMarkerBall::AMarkerBall()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	
 }
 
 void AMarkerBall::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Material = (UMaterialInstance*)StaticMeshComponent->GetMaterial(0); //<<<
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -70,6 +76,18 @@ void AMarkerBall::Look(const FInputActionValue& Value)
 	const FVector2D LookVector = Value.Get<FVector2D>();
 	AddControllerPitchInput(LookVector.Y);
 	AddControllerYawInput(LookVector.X);
+}
+
+void AMarkerBall::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	/*if (const AMarkerCubeBase* MarkerCubePtr = Cast<AMarkerCubeBase>(OtherActor))
+	{
+		MarkerCubePtr->
+	}*/
+}
+
+void AMarkerBall::MarkAnotherActor()
+{
 }
 
 void AMarkerBall::Tick(float DeltaTime)
