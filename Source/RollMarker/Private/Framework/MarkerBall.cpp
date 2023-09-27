@@ -83,11 +83,6 @@ void AMarkerBall::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 	{
 		if (MarkerCubePtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Marked) return;
 
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlap!"));
-		}
-
 		if (Material)
 		{
 			MarkerCubePtr->Mark(Material);

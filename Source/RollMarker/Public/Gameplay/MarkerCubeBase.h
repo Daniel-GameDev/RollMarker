@@ -34,6 +34,9 @@ protected:
 	UFUNCTION()
 	virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	FORCEINLINE UMaterialInstance* GetStaticMeshMaterial() { return (UMaterialInstance*)StaticMeshComponent->GetMaterial(0); }
+
 	void SetBoxComponentGenerateOverlapEvents();
 
 private:
@@ -86,7 +89,7 @@ private:
 	void Jump();
 
 public:
-	void CheckMarkConditions(AActor* OtherActor);
+	bool CheckMarkConditions(AMarkerCubeBase* MarkerCubePtr);
 	void Mark(UMaterialInstance* Material);
 	void UnMark();
 

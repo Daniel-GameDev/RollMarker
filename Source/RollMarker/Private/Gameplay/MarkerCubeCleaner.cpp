@@ -11,22 +11,17 @@ AMarkerCubeCleaner::AMarkerCubeCleaner()
 
 void AMarkerCubeCleaner::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (AMarkerCubeBase* MarkerCuberPtr = Cast<AMarkerCubeBase>(OtherActor))
+	if (AMarkerCubeBase* MarkerCubePtr = Cast<AMarkerCubeBase>(OtherActor))
 	{
 		if (MarkerCubeState == EMarkerCubeState::EMCS_Default)
 		{
-			if (MarkerCuberPtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Default) return;
+			if (MarkerCubePtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Default) return;
 
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("UNMARK By Cleaner"));
-			}
-
-			MarkerCuberPtr->UnMark();
+			MarkerCubePtr->UnMark();
 		}
-		else
+		else if (CheckMarkConditions(MarkerCubePtr))
 		{
-			MarkerCuberPtr->CheckMarkConditions(OtherActor);
+			MarkerCubePtr->Mark(GetStaticMeshMaterial());
 		}
 	}
 }

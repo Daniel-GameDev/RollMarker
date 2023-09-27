@@ -50,7 +50,13 @@ void AMarkerCubeBase::SetLastEnumIndex()
 
 void AMarkerCubeBase::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	CheckMarkConditions(OtherActor);
+	if (AMarkerCubeBase* MarkerCubePtr = Cast<AMarkerCubeBase>(OtherActor))
+	{
+		if (CheckMarkConditions(MarkerCubePtr))
+		{
+			MarkerCubePtr->Mark(GetStaticMeshMaterial());
+		}
+	}
 }
 
 void AMarkerCubeBase::SetBoxComponentGenerateOverlapEvents()
@@ -58,14 +64,11 @@ void AMarkerCubeBase::SetBoxComponentGenerateOverlapEvents()
 	BoxComponent->SetGenerateOverlapEvents(bGenerateOverlapEvents);
 }
 
-void AMarkerCubeBase::CheckMarkConditions(AActor* OtherActor)
+bool AMarkerCubeBase::CheckMarkConditions(AMarkerCubeBase* MarkerCubePtr)
 {
-	if (AMarkerCubeBase* MarkerCubePtr = Cast<AMarkerCubeBase>(OtherActor))
-	{
-		if (MarkerCubePtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Marked || MarkerCubePtr->bCanBeMarked == false) return;
+	if (MarkerCubePtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Marked || MarkerCubePtr->bCanBeMarked == false) return false;
 
-		MarkerCubePtr->Mark((UMaterialInstance*)StaticMeshComponent->GetMaterial(0));
-	}
+	return true;
 }
 
 int8 AMarkerCubeBase::GetRandomEnum(TArray<TEnumAsByte<EMarkerCubeActions>>ExcludedEnums)
@@ -151,4 +154,6 @@ void AMarkerCubeBase::UnMark()
 void AMarkerCubeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f "), (float)MarkerCubeState.GetIntValue()));
 }
