@@ -12,6 +12,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Gameplay/MarkerCubeBase.h"
+#include "Gameplay/Common/MarkerCubeTypes.h"
 
 AMarkerBall::AMarkerBall()
 {
@@ -23,7 +24,7 @@ AMarkerBall::AMarkerBall()
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SphereComponent->SetupAttachment(StaticMeshComponent);
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AMarkerBall::OnBoxBeginOverlap);
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AMarkerBall::OnSphereBeginOverlap);
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(StaticMeshComponent);
@@ -31,15 +32,13 @@ AMarkerBall::AMarkerBall()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
-
-	
 }
 
 void AMarkerBall::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Material = (UMaterialInstance*)StaticMeshComponent->GetMaterial(0); //<<<
+	Material = (UMaterialInstance*)StaticMeshComponent->GetMaterial(0);
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -78,16 +77,22 @@ void AMarkerBall::Look(const FInputActionValue& Value)
 	AddControllerYawInput(LookVector.X);
 }
 
-void AMarkerBall::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AMarkerBall::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	/*if (const AMarkerCubeBase* MarkerCubePtr = Cast<AMarkerCubeBase>(OtherActor))
+	if (AMarkerCubeBase* MarkerCubePtr = Cast<AMarkerCubeBase>(OtherActor))
 	{
-		MarkerCubePtr->
-	}*/
-}
+		if (MarkerCubePtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Marked) return;
 
-void AMarkerBall::MarkAnotherActor()
-{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlap!"));
+		}
+
+		if (Material)
+		{
+			MarkerCubePtr->Mark(Material);
+		}
+	}
 }
 
 void AMarkerBall::Tick(float DeltaTime)

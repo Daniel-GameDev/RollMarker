@@ -4,9 +4,11 @@
 #include "Gameplay/MarkerCubeBase.h"
 #include "Components/BoxComponent.h"
 
-AMarkerCubeBase::AMarkerCubeBase()
+AMarkerCubeBase::AMarkerCubeBase()	
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bGenerateOverlapEvents = false;
+	bCanBeMarked = true;
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMeshComponent->SetupAttachment(GetRootComponent());
@@ -14,14 +16,18 @@ AMarkerCubeBase::AMarkerCubeBase()
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	BoxComponent->SetupAttachment(StaticMeshComponent);
+	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AMarkerCubeBase::OnBoxBeginOverlap);
 }
 
 void AMarkerCubeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DefaultMaterial = (UMaterialInstance*)StaticMeshComponent->GetMaterial(0);
+
 	SetLastEnumIndex();
 	SetupRandomMovementTimer();
+	SetBoxComponentGenerateOverlapEvents();
 }
 
 void AMarkerCubeBase::SetupRandomMovementTimer()
@@ -39,6 +45,26 @@ void AMarkerCubeBase::SetLastEnumIndex()
 	for (int8 i = 0; i < LastEnumIndex; i++)
 	{
 		CubeActionsArray.Add(EMarkerCubeActions(i));
+	}
+}
+
+void AMarkerCubeBase::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	CheckMarkConditions(OtherActor);
+}
+
+void AMarkerCubeBase::SetBoxComponentGenerateOverlapEvents()
+{
+	BoxComponent->SetGenerateOverlapEvents(bGenerateOverlapEvents);
+}
+
+void AMarkerCubeBase::CheckMarkConditions(AActor* OtherActor)
+{
+	if (AMarkerCubeBase* MarkerCubePtr = Cast<AMarkerCubeBase>(OtherActor))
+	{
+		if (MarkerCubePtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Marked || MarkerCubePtr->bCanBeMarked == false) return;
+
+		MarkerCubePtr->Mark((UMaterialInstance*)StaticMeshComponent->GetMaterial(0));
 	}
 }
 
@@ -108,8 +134,18 @@ void AMarkerCubeBase::Jump()
 	StaticMeshComponent->AddImpulse(FVector(0.f, 0.f, FMath::FRandRange(MinJumpImpulseValue, MaxJumpImpulseValue)), NAME_None, true);
 }
 
-void AMarkerCubeBase::SetMarkedState(FColor Color)
+void AMarkerCubeBase::Mark(UMaterialInstance* Material)
 {
+	MarkerCubeState = EMarkerCubeState::EMCS_Marked;
+	BoxComponent->SetGenerateOverlapEvents(true);
+	StaticMeshComponent->SetMaterial(0, Material);
+}
+
+void AMarkerCubeBase::UnMark()
+{
+	MarkerCubeState = EMarkerCubeState::EMCS_Default;
+	BoxComponent->SetGenerateOverlapEvents(bGenerateOverlapEvents);
+	StaticMeshComponent->SetMaterial(0, DefaultMaterial);
 }
 
 void AMarkerCubeBase::Tick(float DeltaTime)

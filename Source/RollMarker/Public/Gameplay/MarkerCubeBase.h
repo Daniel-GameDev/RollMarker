@@ -4,23 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Common/MarkerCubeTypes.h"
 #include "MarkerCubeBase.generated.h"
-
-UENUM(BlueprintType)
-enum class EMarkerCubeActions : uint8
-{
-	EMCA_MoveX UMETA(DisplayName = "ImpulseX"),
-	EMCA_MoveY UMETA(DisplayName = "ImpulseY"),
-	EMCA_Jump UMETA(DisplayName = "Jump"),
-	EMCA_Last UMETA(Hidden)
-};
-
-UENUM(BlueprintType) // ???
-enum class EMarkerCubeState : uint8
-{
-	EMCS_Default UMETA(DisplayName = "Default"),
-	EMCS_Marked UMETA(DisplayName = "Marked")
-};
 
 class UBoxComponent;
 
@@ -36,6 +21,20 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bGenerateOverlapEvents;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bCanBeMarked;
+
+	UPROPERTY(VisibleAnywhere)
+	TEnumAsByte<EMarkerCubeState> MarkerCubeState = EMarkerCubeState::EMCS_Default;
+
+	UFUNCTION()
+	virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void SetBoxComponentGenerateOverlapEvents();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -71,6 +70,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Impulse")
 	TEnumAsByte<EMarkerCubeActions> MarkerCubeAction;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMaterialInstance> DefaultMaterial;
+
 	uint8 LastEnumIndex;
 	FTimerHandle TimerHandle;
 	TArray<EMarkerCubeActions> CubeActionsArray;
@@ -84,8 +86,10 @@ private:
 	void Jump();
 
 public:
-	//UPROPERTY(VisibleAnywhere)
-	//TEnumAsByte<EMarkerCubeState> MarkerCuberState = EMarkerCubeState::EMCS_Default;
+	void CheckMarkConditions(AActor* OtherActor);
+	void Mark(UMaterialInstance* Material);
+	void UnMark();
 
-	void SetMarkedState(FColor Color);
+	FORCEINLINE EMarkerCubeState GetMarkerCubeState() { return MarkerCubeState; }
+
 };
