@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Gameplay/MarkerCubeBase.h"
 #include "Gameplay/Common/MarkerCubeTypes.h"
+#include "DrawDebugHelpers.h"
 
 AMarkerBall::AMarkerBall()
 {
@@ -62,7 +63,6 @@ void AMarkerBall::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AMarkerBall::Movement(const FInputActionValue& Value)
 {
-	//TODO: Add Velocity Check for Arrow and speed control
 	const FVector2D MoveVector = Value.Get<FVector2D>();
 	const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(GetControlRotation());
 	const FVector RightVector = UKismetMathLibrary::GetRightVector(GetControlRotation());
@@ -90,7 +90,19 @@ void AMarkerBall::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 	}
 }
 
+void AMarkerBall::DrawBallDirectionArrow()
+{
+	const FVector VelocityVector = StaticMeshComponent->GetPhysicsLinearVelocity();
+	const FVector MeshWorldLocVector = StaticMeshComponent->GetComponentLocation();
+	if (GetWorld())
+	{
+		DrawDebugDirectionalArrow(GetWorld(), MeshWorldLocVector, VelocityVector + MeshWorldLocVector, 5.f, FColor::Red, false, -1.0F, (uint8)0U, 3.f);
+	}
+}
+
 void AMarkerBall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	DrawBallDirectionArrow();
 }

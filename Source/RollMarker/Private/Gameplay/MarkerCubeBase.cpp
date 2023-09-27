@@ -154,6 +154,4 @@ void AMarkerCubeBase::UnMark()
 void AMarkerCubeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f "), (float)MarkerCubeState.GetIntValue()));
 }
