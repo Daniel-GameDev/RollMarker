@@ -3,12 +3,14 @@
 
 #include "Gameplay/MarkerCubeBase.h"
 #include "Components/BoxComponent.h"
+#include "Framework/RollMarkerGameMode.h"
 
 AMarkerCubeBase::AMarkerCubeBase()	
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bGenerateOverlapEvents = false;
 	bCanBeMarked = true;
+	MarkerCubeType = EMarkerCubeType::EMCT_Default;
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMeshComponent->SetupAttachment(GetRootComponent());
@@ -22,6 +24,8 @@ AMarkerCubeBase::AMarkerCubeBase()
 void AMarkerCubeBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TransferStateToGameMode(true);
 
 	DefaultMaterial = (UMaterialInstance*)StaticMeshComponent->GetMaterial(0);
 
@@ -69,6 +73,17 @@ bool AMarkerCubeBase::CheckMarkConditions(AMarkerCubeBase* MarkerCubePtr)
 	if (MarkerCubePtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Marked || MarkerCubePtr->bCanBeMarked == false) return false;
 
 	return true;
+}
+
+void AMarkerCubeBase::TransferStateToGameMode(bool bDefaultState)
+{
+	if (GetWorld())
+	{
+		if (ARollMarkerGameMode* RollMarkerGameMode = Cast<ARollMarkerGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			RollMarkerGameMode->CubeTypeInGame(MarkerCubeType, bDefaultState);
+		}
+	}
 }
 
 int8 AMarkerCubeBase::GetRandomEnum(TArray<TEnumAsByte<EMarkerCubeActions>>ExcludedEnums)
@@ -142,6 +157,7 @@ void AMarkerCubeBase::Mark(UMaterialInstance* Material)
 	MarkerCubeState = EMarkerCubeState::EMCS_Marked;
 	BoxComponent->SetGenerateOverlapEvents(true);
 	StaticMeshComponent->SetMaterial(0, Material);
+	TransferStateToGameMode(false);
 }
 
 void AMarkerCubeBase::UnMark()
@@ -149,6 +165,7 @@ void AMarkerCubeBase::UnMark()
 	MarkerCubeState = EMarkerCubeState::EMCS_Default;
 	BoxComponent->SetGenerateOverlapEvents(bGenerateOverlapEvents);
 	StaticMeshComponent->SetMaterial(0, DefaultMaterial);
+	TransferStateToGameMode(true);
 }
 
 void AMarkerCubeBase::Tick(float DeltaTime)

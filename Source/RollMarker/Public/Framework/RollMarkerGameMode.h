@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Gameplay/Common/MarkerCubeTypes.h"
 #include "RollMarkerGameMode.generated.h"
 
 class AMarkerBall;
@@ -21,8 +22,26 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	FVector StartLocation = FVector(0.f, 0.f, 200.f);
 
+	bool CheckEndGameCondition();
+	void EndGame();
+
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 TotalCubeNum;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 DefaultCubeNum;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 CleanerCubeNum;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float Time;
+
 	UFUNCTION(BlueprintCallable)
 	void BeginGame();
+
+	UFUNCTION()
+	void CubeTypeInGame(EMarkerCubeType MarkerCubeType, bool bDefaultState);
 
 };

@@ -17,3 +17,10 @@ enum class EMarkerCubeState : uint8
 	EMCS_Default UMETA(DisplayName = "Default"),
 	EMCS_Marked UMETA(DisplayName = "Marked")
 };
+
+UENUM(BlueprintType)
+enum class EMarkerCubeType : uint8
+{
+	EMCT_Default UMETA(DisplayName = "Default Cube"),
+	EMCS_Cleaner UMETA(DisplayName = "Cleaner Cube")
+};

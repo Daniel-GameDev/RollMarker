@@ -7,6 +7,7 @@ AMarkerCubeCleaner::AMarkerCubeCleaner()
 {
 	bGenerateOverlapEvents = true;
 	bCanBeMarked = false;
+	MarkerCubeType = EMarkerCubeType::EMCS_Cleaner;
 }
 
 void AMarkerCubeCleaner::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

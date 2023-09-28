@@ -36,6 +36,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<UInputAction> LookAction;
 
+	UPROPERTY(EditDefaultsOnly)
+	float SpeedMultiplier = 5.f;
+
 	UFUNCTION()
 	void Movement(const FInputActionValue& Value);
 

@@ -66,8 +66,8 @@ void AMarkerBall::Movement(const FInputActionValue& Value)
 	const FVector2D MoveVector = Value.Get<FVector2D>();
 	const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(GetControlRotation());
 	const FVector RightVector = UKismetMathLibrary::GetRightVector(GetControlRotation());
-	StaticMeshComponent->AddAngularImpulseInDegrees(ForwardVector * MoveVector.Y * 5.f, NAME_None, true);
-	StaticMeshComponent->AddAngularImpulseInDegrees(RightVector * MoveVector.X * 5.f, NAME_None, true);
+	StaticMeshComponent->AddAngularImpulseInDegrees(ForwardVector * MoveVector.Y * SpeedMultiplier, NAME_None, true);
+	StaticMeshComponent->AddAngularImpulseInDegrees(RightVector * MoveVector.X * SpeedMultiplier, NAME_None, true);
 }
 
 void AMarkerBall::Look(const FInputActionValue& Value)
