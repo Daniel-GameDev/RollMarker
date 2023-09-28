@@ -27,7 +27,4 @@ public:
 	UFUNCTION()
 	void CreateUserWidget(TSubclassOf<UUserWidget> Widget);
 
-	//UFUNCTION()
-	//void StartCameraShake();
-
 };

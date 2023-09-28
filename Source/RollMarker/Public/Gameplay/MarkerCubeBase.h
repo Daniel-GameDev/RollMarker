@@ -34,6 +34,15 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TEnumAsByte<EMarkerCubeType> MarkerCubeType;
 
+	UPROPERTY(EditDefaultsOnly)
+	FVector HitParticleScale = FVector(1.f);
+
+	UFUNCTION()
+	void SpawnHitEmitter(FVector Location);
+
+	UFUNCTION()
+	void PlayHitSound(FVector Location);
+
 	UFUNCTION()
 	virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -78,6 +87,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialInstance> DefaultMaterial;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UParticleSystem> HitParticle;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundBase> HitSound;
 
 	UFUNCTION()
 	void TransferStateToGameMode(bool bDefaultState);

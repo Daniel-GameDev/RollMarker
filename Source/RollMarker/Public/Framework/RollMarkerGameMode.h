@@ -15,6 +15,8 @@ class ROLLMARKER_API ARollMarkerGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AMarkerBall> MarkerBall;
 
@@ -22,6 +24,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	FVector StartLocation = FVector(0.f, 0.f, 200.f);
 
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundBase> Music;
+	
 	bool CheckEndGameCondition();
 	void EndGame();
 

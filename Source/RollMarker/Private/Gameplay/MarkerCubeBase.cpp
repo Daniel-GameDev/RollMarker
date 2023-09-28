@@ -4,6 +4,7 @@
 #include "Gameplay/MarkerCubeBase.h"
 #include "Components/BoxComponent.h"
 #include "Framework/RollMarkerGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 AMarkerCubeBase::AMarkerCubeBase()	
 {
@@ -58,8 +59,28 @@ void AMarkerCubeBase::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AAc
 	{
 		if (CheckMarkConditions(MarkerCubePtr))
 		{
+			FHitResult HitResult;
+			GetWorld()->LineTraceSingleByChannel(HitResult, GetActorLocation(), OtherActor->GetActorLocation(), ECollisionChannel::ECC_Visibility);
+			SpawnHitEmitter(HitResult.Location);
+			PlayHitSound(HitResult.Location);
 			MarkerCubePtr->Mark(GetStaticMeshMaterial());
 		}
+	}
+}
+
+void AMarkerCubeBase::SpawnHitEmitter(FVector Location)
+{
+	if (GetWorld() && HitParticle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, FTransform(GetActorRotation(), Location, FVector(HitParticleScale)));
+	}
+}
+
+void AMarkerCubeBase::PlayHitSound(FVector Location)
+{
+	if (GetWorld() && HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, Location);
 	}
 }
 

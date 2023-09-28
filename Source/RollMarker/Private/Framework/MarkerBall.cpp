@@ -14,6 +14,9 @@
 #include "Gameplay/MarkerCubeBase.h"
 #include "Gameplay/Common/MarkerCubeTypes.h"
 #include "DrawDebugHelpers.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AMarkerBall::AMarkerBall()
 {
@@ -33,6 +36,10 @@ AMarkerBall::AMarkerBall()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+	NiagaraComponent->SetupAttachment(StaticMeshComponent);
+	NiagaraComponent->SetAbsolute(false, true, false);
 }
 
 void AMarkerBall::BeginPlay()
@@ -86,6 +93,14 @@ void AMarkerBall::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 		if (Material)
 		{
 			MarkerCubePtr->Mark(Material);
+		}
+
+		if (GetWorld() && HitParticle && HitSound)
+		{
+			FHitResult HitResult;
+			GetWorld()->LineTraceSingleByChannel(HitResult, GetActorLocation(), OtherActor->GetActorLocation(), ECollisionChannel::ECC_Visibility);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, FTransform(GetActorRotation(), HitResult.Location, FVector(HitParticleScale)));
+			UGameplayStatics::PlaySoundAtLocation(this, HitSound, HitResult.Location);
 		}
 	}
 }

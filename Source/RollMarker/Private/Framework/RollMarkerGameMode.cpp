@@ -30,6 +30,15 @@ void ARollMarkerGameMode::BeginGame()
 	}
 }
 
+void ARollMarkerGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	if (Music)
+	{
+		UGameplayStatics::PlaySound2D(this, Music);
+	}
+}
+
 bool ARollMarkerGameMode::CheckEndGameCondition()
 {
 	if (TotalCubeNum == 0) return true;

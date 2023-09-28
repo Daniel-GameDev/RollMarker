@@ -17,11 +17,19 @@ void AMarkerCubeCleaner::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, 
 		if (MarkerCubeState == EMarkerCubeState::EMCS_Default)
 		{
 			if (MarkerCubePtr->GetMarkerCubeState() == EMarkerCubeState::EMCS_Default) return;
-
+			
+			FHitResult HitResult;
+			GetWorld()->LineTraceSingleByChannel(HitResult, GetActorLocation(), OtherActor->GetActorLocation(), ECollisionChannel::ECC_Visibility);
+			SpawnHitEmitter(HitResult.Location);
+			PlayHitSound(HitResult.Location);
 			MarkerCubePtr->UnMark();
 		}
 		else if (CheckMarkConditions(MarkerCubePtr))
 		{
+			FHitResult HitResult;
+			GetWorld()->LineTraceSingleByChannel(HitResult, GetActorLocation(), OtherActor->GetActorLocation(), ECollisionChannel::ECC_Visibility);
+			SpawnHitEmitter(HitResult.Location);
+			PlayHitSound(HitResult.Location);
 			MarkerCubePtr->Mark(GetStaticMeshMaterial());
 		}
 	}
